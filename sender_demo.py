@@ -12,13 +12,15 @@ from skimage import img_as_ubyte
 import torch
 from sync_batchnorm import DataParallelWithCallback
 
-from modules.generator import OcclusionAwareGenerator
-from modules.keypoint_detector import KPDetector
-from animate import normalize_kp
 from scipy.spatial import ConvexHull
 import bz2
 import pickle
 import _pickle as cPickle
+from PIL import Image
+
+from modules.generator import OcclusionAwareGenerator
+from modules.keypoint_detector import KPDetector
+from animate import normalize_kp
 
 
 if sys.version_info[0] < 3:
@@ -27,7 +29,7 @@ if sys.version_info[0] < 3:
 def load_kp_detector(config_path, checkpoint_path, cpu=False):
 
     with open(config_path) as f:
-        config = yaml.load(f)
+        config = yaml.safe_load(f)
 
     kp_detector = KPDetector(**config['model_params']['kp_detector_params'],
                              **config['model_params']['common_params'])
@@ -67,10 +69,8 @@ def get_key_points(source_image, driving_video, kp_detector, relative=True, adap
             kp_norm = normalize_kp(kp_source=kp_source, kp_driving=kp_driving,
                                    kp_driving_initial=kp_driving_initial, use_relative_movement=relative,
                                    use_relative_jacobian=relative, adapt_movement_scale=adapt_movement_scale)
-            #out = generator(source, kp_source=kp_source, kp_driving=kp_norm)
             key_points.append(kp_norm)
 
-            #predictions.append(np.transpose(out['prediction'].data.cpu().numpy(), [0, 2, 3, 1])[0])
     return key_points
 
 def find_best_frame(source, driving, cpu=False):
@@ -138,6 +138,13 @@ if __name__ == "__main__":
     kp_detector = load_kp_detector(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
 
     key_points = get_key_points(source_image, driving_video, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
-    out_data = {"src_img": source_image, "fps": fps, "key_points": key_points}
+
+    src_img_file_name = "src_image.jpeg"
+    #im = Image.fromarray(source_image)
+    #im.save(src_img_file_name)
+    imageio.imwrite(src_img_file_name, source_image)
+    #print("img type", type(source_image))
+
+    out_data = {"src_img": src_img_file_name, "fps": fps, "key_points": key_points}
     write_compressed_pickle(out_data, 'video.pkl')
 
