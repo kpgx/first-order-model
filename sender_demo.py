@@ -139,12 +139,12 @@ if __name__ == "__main__":
 
     key_points = get_key_points(source_image, driving_video, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
 
-    src_img_file_name = "src_image.jpeg"
+    src_img_file_name = "out/src_image.jpeg"
     #im = Image.fromarray(source_image)
     #im.save(src_img_file_name)
     imageio.imwrite(src_img_file_name, source_image)
     #print("img type", type(source_image))
 
     out_data = {"src_img": src_img_file_name, "fps": fps, "key_points": key_points}
-    write_compressed_pickle(out_data, 'video.pkl')
+    write_compressed_pickle(out_data, 'out/video.pkl')
 
