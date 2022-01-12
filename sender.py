@@ -16,6 +16,8 @@ from modules.generator import OcclusionAwareGenerator
 from modules.keypoint_detector import KPDetector
 from animate import normalize_kp
 from scipy.spatial import ConvexHull
+import gzip
+import pickle
 
 
 if sys.version_info[0] < 3:
@@ -158,6 +160,10 @@ if __name__ == "__main__":
     key_points = extract_keypoints(source_image, driving_video, generator, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
     #print("KP TYPE", type(key_points))
     np.save("working/keypoints", np.array(key_points), allow_pickle=True)
+
+    #save compressed file(for file size comparison)
+    with gzip.open("gzip_kp.gz", "wb") as f:
+        pickle.dump(np.array(key_points), f)
 
     #imageio.mimsave(opt.result_video, [img_as_ubyte(frame) for frame in predictions], fps=fps)
 
