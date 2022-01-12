@@ -18,6 +18,7 @@ from animate import normalize_kp
 from scipy.spatial import ConvexHull
 import gzip
 import pickle
+import time
 
 
 if sys.version_info[0] < 3:
@@ -161,15 +162,25 @@ if __name__ == "__main__":
     imageio.imwrite(src_img_file_name, source_image)
 
     driving_video = [resize(frame, (256, 256))[..., :3] for frame in driving_video]
+    print("loading kp detector")
+    t = time.time()
     _, kp_detector = load_checkpoints(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
+    print(time.time() - t)
+    t = time.time()
+    print("extracting key points")
 
     key_points = extract_keypoints(source_image, driving_video, None, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
     #print("KP TYPE", type(key_points))
+    print(time.time() - t)
+    print("saving keypoints")
+    t = time.time()
     np.save("working/keypoints", np.array(key_points), allow_pickle=True)
 
     #save compressed file(for file size comparison)
     with gzip.open("gzip_kp.gz", "wb") as f:
         pickle.dump(np.array(key_points), f)
 
+    print(time.time() - t)
+    print("all done")
     #imageio.mimsave(opt.result_video, [img_as_ubyte(frame) for frame in predictions], fps=fps)
 
