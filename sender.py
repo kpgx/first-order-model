@@ -63,17 +63,25 @@ def extract_keypoints(source_image, driving_video, generator, kp_detector, relat
         #predictions = []
 	# store the source image in a tensor/
 	# no idea what's the permute do
+        start = time.time()
         source = torch.tensor(source_image[np.newaxis].astype(np.float32)).permute(0, 3, 1, 2)
+        driving = torch.tensor(np.array(driving_video)[np.newaxis].astype(np.float32)).permute(0, 4, 1, 2, 3)
+        end = time.time()
+        print(" loading data in to tensors", end - start)
         if not cpu:
             source = source.cuda()
 	# store the video in a tensor
-        driving = torch.tensor(np.array(driving_video)[np.newaxis].astype(np.float32)).permute(0, 4, 1, 2, 3)
 	# find the key points in the source image(in our case frame 1
+        start = time.time()
         kp_source = kp_detector(source)
 	# find the key points in the source image(in our case frame 1
         kp_driving_initial = kp_detector(driving[:, :, 0])
+        end = time.time()
+        print(" extracting kp from static images", end - start)
 	# loop the video
+        start = time.time()
         for frame_idx in tqdm(range(driving.shape[2])):
+            #print("frame id", frame_idx)
             driving_frame = driving[:, :, frame_idx]
             if not cpu:
                 driving_frame = driving_frame.cuda()
@@ -86,6 +94,8 @@ def extract_keypoints(source_image, driving_video, generator, kp_detector, relat
             #out = generator(source, kp_source=kp_source, kp_driving=kp_norm)
 
             #predictions.append(np.transpose(out['prediction'].data.cpu().numpy(), [0, 2, 3, 1])[0])
+        end = time.time()
+        print(" extract key points from video", end - start)
     return kp
 
 def find_best_frame(source, driving, cpu=False):
@@ -114,6 +124,7 @@ def find_best_frame(source, driving, cpu=False):
     return frame_num
 
 if __name__ == "__main__":
+    total_start = time.time()
     parser = ArgumentParser()
     parser.add_argument("--config", required=True, help="path to config")
     parser.add_argument("--checkpoint", default='vox-cpk.pth.tar', help="path to checkpoint to restore")
@@ -162,25 +173,24 @@ if __name__ == "__main__":
     imageio.imwrite(src_img_file_name, source_image)
 
     driving_video = [resize(frame, (256, 256))[..., :3] for frame in driving_video]
-    print("loading kp detector")
-    t = time.time()
+    load_start = time.time()
     _, kp_detector = load_checkpoints(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
-    print(time.time() - t)
-    t = time.time()
-    print("extracting key points")
-
+    load_end = time.time()
+    print("loading kp detector", load_end-load_start)
+    kp_extract_start = time.time()
     key_points = extract_keypoints(source_image, driving_video, None, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
     #print("KP TYPE", type(key_points))
-    print(time.time() - t)
-    print("saving keypoints")
-    t = time.time()
+    kp_extract_end = time.time()
+    print("extracting key points", kp_extract_end-kp_extract_start)
+    kp_save_start = time.time()
     np.save("working/keypoints", np.array(key_points), allow_pickle=True)
 
     #save compressed file(for file size comparison)
     with gzip.open("gzip_kp.gz", "wb") as f:
         pickle.dump(np.array(key_points), f)
-
-    print(time.time() - t)
-    print("all done")
+    kp_save_end = time.time()
+    print("kp save", kp_save_end - kp_save_start)
+    total_end = time.time()
+    print("total time", total_end - total_start)
     #imageio.mimsave(opt.result_video, [img_as_ubyte(frame) for frame in predictions], fps=fps)
 
