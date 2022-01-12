@@ -12,7 +12,7 @@ from skimage import img_as_ubyte
 import torch
 from sync_batchnorm import DataParallelWithCallback
 
-from modules.generator import OcclusionAwareGenerator
+#from modules.generator import OcclusionAwareGenerator
 from modules.keypoint_detector import KPDetector
 from animate import normalize_kp
 from scipy.spatial import ConvexHull
@@ -28,10 +28,10 @@ def load_checkpoints(config_path, checkpoint_path, cpu=False):
     with open(config_path) as f:
         config = yaml.load(f)
 
-    generator = OcclusionAwareGenerator(**config['model_params']['generator_params'],
-                                        **config['model_params']['common_params'])
-    if not cpu:
-        generator.cuda()
+    #generator = OcclusionAwareGenerator(**config['model_params']['generator_params'],
+    #                                    **config['model_params']['common_params'])
+    #if not cpu:
+    #    generator.cuda()
 
     kp_detector = KPDetector(**config['model_params']['kp_detector_params'],
                              **config['model_params']['common_params'])
@@ -43,34 +43,40 @@ def load_checkpoints(config_path, checkpoint_path, cpu=False):
     else:
         checkpoint = torch.load(checkpoint_path)
  
-    generator.load_state_dict(checkpoint['generator'])
+    #generator.load_state_dict(checkpoint['generator'])
     kp_detector.load_state_dict(checkpoint['kp_detector'])
     
     if not cpu:
-        generator = DataParallelWithCallback(generator)
+    #    generator = DataParallelWithCallback(generator)
         kp_detector = DataParallelWithCallback(kp_detector)
 
-    generator.eval()
+    #generator.eval()
     kp_detector.eval()
     
-    return generator, kp_detector
+    return None, kp_detector
 
 
 def extract_keypoints(source_image, driving_video, generator, kp_detector, relative=True, adapt_movement_scale=True, cpu=False):
     kp=[]
     with torch.no_grad():
         #predictions = []
+	# store the source image in a tensor/
+	# no idea what's the permute do
         source = torch.tensor(source_image[np.newaxis].astype(np.float32)).permute(0, 3, 1, 2)
         if not cpu:
             source = source.cuda()
+	# store the video in a tensor
         driving = torch.tensor(np.array(driving_video)[np.newaxis].astype(np.float32)).permute(0, 4, 1, 2, 3)
+	# find the key points in the source image(in our case frame 1
         kp_source = kp_detector(source)
+	# find the key points in the source image(in our case frame 1
         kp_driving_initial = kp_detector(driving[:, :, 0])
-
+	# loop the video
         for frame_idx in tqdm(range(driving.shape[2])):
             driving_frame = driving[:, :, frame_idx]
             if not cpu:
                 driving_frame = driving_frame.cuda()
+	    # extract the keypoints from current video frame
             kp_driving = kp_detector(driving_frame)
             kp_norm = normalize_kp(kp_source=kp_source, kp_driving=kp_driving,
                                    kp_driving_initial=kp_driving_initial, use_relative_movement=relative,
@@ -155,9 +161,9 @@ if __name__ == "__main__":
     imageio.imwrite(src_img_file_name, source_image)
 
     driving_video = [resize(frame, (256, 256))[..., :3] for frame in driving_video]
-    generator, kp_detector = load_checkpoints(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
+    _, kp_detector = load_checkpoints(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
 
-    key_points = extract_keypoints(source_image, driving_video, generator, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
+    key_points = extract_keypoints(source_image, driving_video, None, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
     #print("KP TYPE", type(key_points))
     np.save("working/keypoints", np.array(key_points), allow_pickle=True)
 
