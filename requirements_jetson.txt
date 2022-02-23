@@ -1,0 +1,4 @@
+tqdm
+imageio
+scikit-image==0.16.2
+imageio-ffmpeg
