@@ -16,6 +16,8 @@ from modules.generator import OcclusionAwareGenerator
 from modules.keypoint_detector import KPDetector
 from animate import normalize_kp
 from scipy.spatial import ConvexHull
+import os
+os.environ["IMAGEIO_FFMPEG_EXE"] = "/usr/bin/ffmpeg"
 
 
 if sys.version_info[0] < 3:
