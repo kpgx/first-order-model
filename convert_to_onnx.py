@@ -34,6 +34,8 @@ def load_checkpoints(checkpoint_path, config_path):
 
 def export_models(config_path, checkpoint_path):
     generator, kp_detector = load_checkpoints(checkpoint_path, config_path)
+    torch.save(kp_detector.state_dict(), "kp_detector_state_dict.pt")
+    torch.save(kp_detector, "kp_detector_complete_model.pt")
 
     # First export the kp detector
     dummy_source_image = torch.randn(1, 3, 256, 256, device='cpu')
