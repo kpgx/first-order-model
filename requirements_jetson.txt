@@ -1,4 +1,4 @@
-tqdm
-imageio
+tqdm==4.62.3
+imageio==2.15.0
 scikit-image==0.16.2
-imageio-ffmpeg
+imageio-ffmpeg==0.4.4
