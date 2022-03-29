@@ -65,7 +65,9 @@ def to_numpy(tensor):
 
 def onnx_extract_keypoints(video, kp_detector_file_name):
     kp = []
-    EP_list = ['CUDAExecutionProvider', 'CPUExecutionProvider']
+#    EP_list = ['CPUExecutionProvider',]
+    #EP_list = ['CUDAExecutionProvider',]
+    EP_list = ['TensorrtExecutionProvider',]
     sess = rt.InferenceSession(kp_detector_file_name, providers=EP_list)
     driving = torch.tensor(np.array(video)[np.newaxis].astype(np.float32)).permute(0, 4, 1, 2, 3)
     #print(sess.get_inputs()[0].name, type(to_numpy(kp_driving_initial)))
@@ -195,6 +197,7 @@ if __name__ == "__main__":
 
     driving_video = [resize(frame, (256, 256))[..., :3] for frame in driving_video]
 
+    #key_points = onnx_extract_keypoints(driving_video, "int8_kpd.onnx")
     key_points = onnx_extract_keypoints(driving_video, "first-order-model-kp_detector.onnx")
     
 #    _, kp_detector = load_checkpoints(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
