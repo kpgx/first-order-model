@@ -59,8 +59,8 @@ def export_models(config_path, checkpoint_path):
     #load_and_check('first-order-model-generator.onnx')
 
 if __name__ == "__main__":
-    config_file = 'config/bair-256.yaml'
-    checkpoint_file = 'checkpoints/bair-cpk.pth.tar'
+    config_file = "retrained_models/01/bair-256.yaml"
+    checkpoint_file = "retrained_models/01/checkpoint.pth.tar"
     try:
 #        export_models('config/vox-adv-256.yaml',
 #                      '/Users/username/Download/vox-adv-cpk.pth.tar')
