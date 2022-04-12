@@ -110,8 +110,8 @@ def find_best_frame(source, driving, cpu=False):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--config", required=True, help="path to config")
-    parser.add_argument("--checkpoint", default='vox-cpk.pth.tar', help="path to checkpoint to restore")
+    parser.add_argument("--config", default='retrained_models/logs_conv_3/bair-256.yaml', help="path to config")
+    parser.add_argument("--checkpoint", default='retrained_models/logs_conv_3/bair-256 06_04_22_10.03.46/00000019-checkpoint.pth.tar', help="path to checkpoint to restore")
 
 #    parser.add_argument("--source_image", default='sup-mat/source.png', help="path to source image")
 #    parser.add_argument("--driving_video", default='sup-mat/source.png', help="path to driving video")
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     parser.add_argument("--best_frame", dest="best_frame", type=int, default=None,  
                         help="Set frame to start from.")
  
-    parser.add_argument("--cpu", dest="cpu", action="store_true", help="cpu mode.")
+    parser.add_argument("--cpu", dest="cpu",default=True, action="store_true", help="cpu mode.")
  
 
     parser.set_defaults(relative=False)
@@ -148,7 +148,7 @@ if __name__ == "__main__":
 #        pass
 #    reader.close()
 
-    source_image = resize(source_image, (256, 256))[..., :3]
+    # source_image = resize(source_image, (256, 256))[..., :3]
 #    driving_video = [resize(frame, (256, 256))[..., :3] for frame in driving_video]
     generator, kp_detector = load_checkpoints(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
 
