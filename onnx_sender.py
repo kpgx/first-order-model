@@ -16,7 +16,7 @@ from animate import normalize_kp
 import time
 import onnxruntime as rt
 
-WAIT = 0
+WAIT = 30
 #WAIT = 60
 
 
@@ -69,15 +69,20 @@ def write_compressed_keypoint_file(file_name, file):
         pickle.dump(np.array(file), f)
 
 
+def write_compressed_keypoint_file2(file_name, file):
+    np.savez_compressed(file_name+".npz", file)
+
+
+
 if __name__ == "__main__":
     print("begin_wait,", time.time())
     time.sleep(WAIT)
     parser = ArgumentParser()
     parser.add_argument("--checkpoint", default='conv3_fp32_kpd.onnx', help="path to onnx checkpoint to restore")
-    parser.add_argument("--driving_video", default='h264_long.mp4', help="path to driving video")
-    parser.add_argument("--out_kp_file", default='working/onnx_fp32.kp', help="path to output keypoints file")
+    parser.add_argument("--driving_video", default='in_video/h264_long_t10_2fps.mp4', help="path to driving video")
+    parser.add_argument("--out_kp_file", default='working/onnx_fp32_f2_t10.kp', help="path to output keypoints file")
     parser.add_argument("--out_img_file", default='working/src_image.jpeg', help="path to output image file")
-    parser.add_argument("--run_time", default='cpu', help="choose between cpu, gpu or trt")
+    parser.add_argument("--run_time", default='gpu', help="choose between cpu, gpu or trt")
     parser.add_argument("--fp", default='32', help="precision of the model weights")
 
     opt = parser.parse_args()
@@ -92,6 +97,7 @@ if __name__ == "__main__":
     except RuntimeError:
         pass
     reader.close()
+    print("resizing_video,", time.time())
     driving_video = [resize(frame, (256, 256))[..., :3] for frame in driving_video]
 
     import copy
@@ -102,12 +108,14 @@ if __name__ == "__main__":
 
     key_points = onnx_extract_keypoints(driving_video, opt.checkpoint, opt.fp, opt.run_time)
 
-    print("process_key_points,", time.time())
+    #print("process_key_points,", time.time())
     processed_keypoints = key_points
 
     print("save_key_points,", time.time())
     np.save(opt.out_kp_file, np.array(processed_keypoints), allow_pickle=True)
-    write_compressed_keypoint_file(opt.out_kp_file+"_compressed", processed_keypoints)
+    write_compressed_keypoint_file2(opt.out_kp_file+"_compressed", processed_keypoints)
 
 #
     print("end,", time.time())
+
+    time.sleep(WAIT)

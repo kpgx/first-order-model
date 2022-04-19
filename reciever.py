@@ -97,10 +97,10 @@ def find_best_frame(source, driving, cpu=False):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--config", default='retrained_models/logs_conv_3/bair-256.yaml', help="path to config")
-    parser.add_argument("--checkpoint", default='retrained_models/logs_conv_3/bair-256 06_04_22_10.03.46/00000019-checkpoint.pth.tar', help="path to checkpoint to restore")
+    parser.add_argument("--config", default='config/00/bair-256.yaml', help="path to config")
+    parser.add_argument("--checkpoint", default='checkpoints/00/bair-cpk.pth.tar', help="path to checkpoint to restore")
 
-    parser.add_argument("--result_video", default='result.mp4', help="path to output")
+    parser.add_argument("--result_video", default='working/conv5_kpd_with_conv5_gen.mp4', help="path to output")
  
     parser.add_argument("--relative", dest="relative", action="store_true", help="use relative or absolute keypoint coordinates")
     parser.add_argument("--adapt_scale", dest="adapt_scale", action="store_true", help="adapt movement scale based on convex hull of keypoints")
@@ -111,9 +111,9 @@ if __name__ == "__main__":
     parser.add_argument("--best_frame", dest="best_frame", type=int, default=None,  
                         help="Set frame to start from.")
  
-    parser.add_argument("--cpu", dest="cpu",default=True, action="store_true", help="cpu mode.")
+    parser.add_argument("--cpu", dest="cpu",default=False, action="store_true", help="cpu mode.")
     parser.add_argument("--src_img", default="working/src_image.jpeg", help="key frame")
-    parser.add_argument("--kp_file", default="working/keypoints.npy", help="keypoints file")
+    parser.add_argument("--kp_file", default="working/torch.kp.npy", help="keypoints file")
  
     parser.set_defaults(relative=False)
     parser.set_defaults(adapt_scale=False)
@@ -121,11 +121,13 @@ if __name__ == "__main__":
     opt = parser.parse_args()
 
     source_image = imageio.imread(opt.src_img)
+    source_image = resize(source_image, (256,256))[..., :3]
     key_points = np.load(opt.kp_file, allow_pickle=True)
 
     generator, kp_detector = load_checkpoints(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
 
     predictions = make_animation(source_image, key_points, generator, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
     fps=10
+    print("saving video at", opt.result_video)
     imageio.mimsave(opt.result_video, [img_as_ubyte(frame) for frame in predictions], fps=fps)
 

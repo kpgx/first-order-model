@@ -87,14 +87,14 @@ if __name__ == "__main__":
     print("begin_wait,", time.time())
     time.sleep(WAIT)
     parser = ArgumentParser()
-    parser.add_argument("--config", default='retrained_models/logs_conv_3/bair-256.yaml', help="path to config")
+    parser.add_argument("--config", default='config/00/bair-256.yaml', help="path to config")
     parser.add_argument("--checkpoint",
-                        default='retrained_models/logs_conv_3/bair-256 06_04_22_10.03.46/00000019-checkpoint.pth.tar',
+                        default='checkpoints/00/bair-cpk.pth.tar',
                         help="path to checkpoint to restore")
 
     parser.add_argument("--driving_video", default='h264_long.mp4', help="path to driving video")
-    parser.add_argument("--cpu", default=True, dest="cpu", action="store_true", help="cpu mode.")
-    parser.add_argument("--out_kp_file", default='working/torch.kp', help="path to output keypoints file")
+    parser.add_argument("--cpu", default=False, dest="cpu", action="store_true", help="cpu mode.")
+    parser.add_argument("--out_kp_file", default='working/torch32.kp', help="path to output keypoints file")
     parser.add_argument("--out_img_file", default='working/src_image.jpeg', help="path to output image file")
 
     parser.set_defaults(relative=False)
@@ -132,4 +132,4 @@ if __name__ == "__main__":
     write_compressed_keypoint_file(opt.out_kp_file+"_compressed", key_points)
 
     print("end,", time.time())
-    time.sleep(10)
+    time.sleep(WAIT)
