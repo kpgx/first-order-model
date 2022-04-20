@@ -11,12 +11,15 @@ import imageio
 import numpy as np
 from skimage.transform import resize
 import torch
+from imageio import mimread
+from skimage import io, img_as_float32
+
 
 from animate import normalize_kp
 import time
 import onnxruntime as rt
 
-WAIT = 30
+WAIT = 0
 #WAIT = 60
 
 
@@ -61,6 +64,7 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
                                kp_driving_initial=init_frame_kp, use_relative_movement=False,
                                use_relative_jacobian=False, adapt_movement_scale=False)
         kp.append(current_frame_kp)
+
     return kp
 
 
@@ -73,13 +77,24 @@ def write_compressed_keypoint_file2(file_name, file):
     np.savez_compressed(file_name+".npz", file)
 
 
+def get_video_array(file_name):
+    video = np.array(mimread(file_name))
+    if len(video.shape) == 3:
+        video = np.array([gray2rgb(frame) for frame in video])
+    if video.shape[-1] == 4:
+        video = video[..., :3]
+    video_array = img_as_float32(video)
+
+    return video_array
+
+
 
 if __name__ == "__main__":
     print("begin_wait,", time.time())
     time.sleep(WAIT)
     parser = ArgumentParser()
-    parser.add_argument("--checkpoint", default='conv3_fp32_kpd.onnx', help="path to onnx checkpoint to restore")
-    parser.add_argument("--driving_video", default='in_video/h264_long_t10_2fps.mp4', help="path to driving video")
+    parser.add_argument("--checkpoint", default='checkpoints/onnx_models/conv3_fp32_kpd.onnx', help="path to onnx checkpoint to restore")
+    parser.add_argument("--driving_video", default='working/h264_long_3x_time.mp4', help="path to driving video")
     parser.add_argument("--out_kp_file", default='working/onnx_fp32_f2_t10.kp', help="path to output keypoints file")
     parser.add_argument("--out_img_file", default='working/src_image.jpeg', help="path to output image file")
     parser.add_argument("--run_time", default='gpu', help="choose between cpu, gpu or trt")
@@ -87,18 +102,7 @@ if __name__ == "__main__":
 
     opt = parser.parse_args()
 
-    reader = imageio.get_reader(opt.driving_video)
-    fps = reader.get_meta_data()['fps']
-    driving_video = []
-    print("reading_video,", time.time())
-    try:
-        for im in reader:
-            driving_video.append(im)
-    except RuntimeError:
-        pass
-    reader.close()
-    print("resizing_video,", time.time())
-    driving_video = [resize(frame, (256, 256))[..., :3] for frame in driving_video]
+    driving_video = get_video_array(opt.driving_video)
 
     import copy
     source_image = copy.deepcopy(driving_video[0])
