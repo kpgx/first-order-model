@@ -18,6 +18,7 @@ from skimage import io, img_as_float32
 from animate import normalize_kp
 import time
 import onnxruntime as rt
+import os
 
 WAIT = 10
 TIMES = 10
@@ -73,7 +74,7 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
                                    use_relative_jacobian=False, adapt_movement_scale=False)
             kp.append(current_frame_kp)
     end_time = time.time()
-    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, {}\n".format(st_time,end_time))
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, {}, ".format(st_time,end_time))
     return kp
 
 
@@ -102,6 +103,10 @@ def write_log_entry(file_name, line):
         f.write(line)
 
 
+def get_file_size_in_KB(file_name):
+    return os.path.getsize(file_name)/1000
+
+
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--checkpoint", default='checkpoints/onnx_models/conv3_fp32_kpd.onnx', help="path to onnx checkpoint to restore")
@@ -115,7 +120,7 @@ if __name__ == "__main__":
 
     LOG_FILE_NAME = opt.driving_video+LOG_FILE_SUFFIX
     driving_video = get_video_array(opt.driving_video)
-    write_log_entry(SINGLE_LOG_FILE_NAME, "file_name, wait_start, wait_end, kp_extract_start, kp_extract_end\n")
+    write_log_entry(SINGLE_LOG_FILE_NAME, "file_name, wait_start, wait_end, kp_extract_start, kp_extract_end, src_size, kp_size, compressed_kp_size\n")
     write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(opt.driving_video))
 
     write_log_entry(LOG_FILE_NAME, "begin_wait, {}\n".format(time.time()))
@@ -137,6 +142,11 @@ if __name__ == "__main__":
     # print("save_key_points,", time.time())
     np.save(opt.out_kp_file, np.array(key_points), allow_pickle=True)
     write_compressed_keypoint_file2(opt.out_kp_file+"_compressed", key_points)
+    
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(get_file_size_in_KB(opt.driving_video)))
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(get_file_size_in_KB(opt.out_kp_file)))
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}\n".format(get_file_size_in_KB(opt.out_kp_file+"_compressed")))
+
 
     write_log_entry(LOG_FILE_NAME, "end, {}\n".format(time.time()))
     # print("end,", time.time())
