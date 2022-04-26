@@ -120,8 +120,9 @@ if __name__ == "__main__":
 
     LOG_FILE_NAME = opt.driving_video+LOG_FILE_SUFFIX
     driving_video = get_video_array(opt.driving_video)
-    # write_log_entry(SINGLE_LOG_FILE_NAME, "file_name, wait_start, wait_end, kp_extract_start, kp_extract_end, src_size, kp_size, compressed_kp_size\n")
+    # write_log_entry(SINGLE_LOG_FILE_NAME, "file_name,#of frames, wait_start, wait_end, kp_extract_start, kp_extract_end, src_size, kp_size, compressed_kp_size\n")
     write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(opt.driving_video))
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(len(driving_video)))
 
     write_log_entry(LOG_FILE_NAME, "begin_wait, {}\n".format(time.time()))
     # print("begin_wait,", time.time())
