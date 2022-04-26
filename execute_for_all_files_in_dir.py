@@ -8,7 +8,7 @@ DIR = "working"
 
 
 def get_file_list_from_dir(mypath):
-    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    onlyfiles = [join(mypath, f) for f in listdir(mypath) if isfile(join(mypath, f))]
     return onlyfiles
 
 
