@@ -19,7 +19,7 @@ from animate import normalize_kp
 import time
 import onnxruntime as rt
 
-WAIT = 0
+WAIT = 10
 TIMES = 10
 LOG_FILE_SUFFIX = "_fom.log"
 LOG_FILE_NAME = "" # this get populated once video file is read
@@ -115,11 +115,15 @@ if __name__ == "__main__":
 
     LOG_FILE_NAME = opt.driving_video+LOG_FILE_SUFFIX
     driving_video = get_video_array(opt.driving_video)
+    write_log_entry(SINGLE_LOG_FILE_NAME, "file_name, wait_start, wait_end, kp_extract_start, kp_extract_end\n")
     write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(opt.driving_video))
 
     write_log_entry(LOG_FILE_NAME, "begin_wait, {}\n".format(time.time()))
     # print("begin_wait,", time.time())
+    wait_st=time.time()
     time.sleep(WAIT)
+    wait_end = time.time()
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{},{}, ".format(wait_st, wait_end))
 
     import copy
     source_image = copy.deepcopy(driving_video[0])
@@ -136,5 +140,3 @@ if __name__ == "__main__":
 
     write_log_entry(LOG_FILE_NAME, "end, {}\n".format(time.time()))
     # print("end,", time.time())
-
-    time.sleep(WAIT)
