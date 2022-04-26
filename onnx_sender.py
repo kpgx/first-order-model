@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     LOG_FILE_NAME = opt.driving_video+LOG_FILE_SUFFIX
     driving_video = get_video_array(opt.driving_video)
-    write_log_entry(SINGLE_LOG_FILE_NAME, "file_name, wait_start, wait_end, kp_extract_start, kp_extract_end, src_size, kp_size, compressed_kp_size\n")
+    # write_log_entry(SINGLE_LOG_FILE_NAME, "file_name, wait_start, wait_end, kp_extract_start, kp_extract_end, src_size, kp_size, compressed_kp_size\n")
     write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(opt.driving_video))
 
     write_log_entry(LOG_FILE_NAME, "begin_wait, {}\n".format(time.time()))
@@ -144,8 +144,8 @@ if __name__ == "__main__":
     write_compressed_keypoint_file2(opt.out_kp_file+"_compressed", key_points)
     
     write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(get_file_size_in_KB(opt.driving_video)))
-    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(get_file_size_in_KB(opt.out_kp_file)))
-    write_log_entry(SINGLE_LOG_FILE_NAME, "{}\n".format(get_file_size_in_KB(opt.out_kp_file+"_compressed")))
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(get_file_size_in_KB(opt.out_kp_file+".npy")))
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}\n".format(get_file_size_in_KB(opt.out_kp_file+"_compressed.npz")))
 
 
     write_log_entry(LOG_FILE_NAME, "end, {}\n".format(time.time()))
