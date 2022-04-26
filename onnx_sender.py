@@ -23,6 +23,7 @@ WAIT = 0
 TIMES = 10
 LOG_FILE_SUFFIX = "_fom.log"
 LOG_FILE_NAME = "" # this get populated once video file is read
+SINGLE_LOG_FILE_NAME = "main.log"
 #WAIT = 60
 
 
@@ -44,7 +45,7 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
     if rtime=='trt':
         EP_list.append('TensorrtExecutionProvider')
 
-    write_log_entry(LOG_FILE_NAME, "loading_model, {}".format(TIMES, time.time()))
+    write_log_entry(LOG_FILE_NAME, "loading_model, {}".format(time.time()))
     # print("loading_model,", time.time())
     sess = rt.InferenceSession(kp_detector_file_name, providers=EP_list)
     if fp == '16':
@@ -59,6 +60,7 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
     init_frame_kp = {"value":torch.from_numpy(init_frame_kp[0]), "jacobian":torch.from_numpy(init_frame_kp[1])}
     # loop the video
     write_log_entry(LOG_FILE_NAME, "extracting_key_points_{}_times, {}".format(TIMES, time.time()))
+    st_time = time.time()
     # print("extracting_key_points ", TIMES, ',', time.time())
     for i in range(TIMES):
         for frame_idx in tqdm(range(driving.shape[2])):
@@ -70,7 +72,8 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
                                    kp_driving_initial=init_frame_kp, use_relative_movement=False,
                                    use_relative_jacobian=False, adapt_movement_scale=False)
             kp.append(current_frame_kp)
-
+    end_time = time.time()
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, {}\n".format(st_time,end_time))
     return kp
 
 
@@ -112,6 +115,7 @@ if __name__ == "__main__":
 
     LOG_FILE_NAME = opt.driving_video+LOG_FILE_SUFFIX
     driving_video = get_video_array(opt.driving_video)
+    write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(opt.driving_video))
 
     write_log_entry(LOG_FILE_NAME, "begin_wait, {}".format(time.time()))
     # print("begin_wait,", time.time())
