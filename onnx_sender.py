@@ -20,6 +20,7 @@ import time
 import onnxruntime as rt
 
 WAIT = 0
+TIMES = 10
 #WAIT = 60
 
 
@@ -54,16 +55,17 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
     init_frame_kp = sess.run(None, init_frame)
     init_frame_kp = {"value":torch.from_numpy(init_frame_kp[0]), "jacobian":torch.from_numpy(init_frame_kp[1])}
     # loop the video                                                                                                                                                                                                                                                      
-    print("extracting_key_points,", time.time())
-    for frame_idx in tqdm(range(driving.shape[2])):
-        driving_frame = driving[:, :, frame_idx]
-        current_frame = {sess.get_inputs()[0].name: to_numpy(driving_frame)}
-        current_frame_kp = sess.run(None, current_frame)
-        current_frame_kp = {"value":torch.from_numpy(current_frame_kp[0]), "jacobian":torch.from_numpy(current_frame_kp[1])}
-        current_frame_kp = normalize_kp(kp_source=init_frame_kp, kp_driving=current_frame_kp,
-                               kp_driving_initial=init_frame_kp, use_relative_movement=False,
-                               use_relative_jacobian=False, adapt_movement_scale=False)
-        kp.append(current_frame_kp)
+    print("extracting_key_points ", TIMES, ',', time.time())
+    for i in range(TIMES):
+        for frame_idx in tqdm(range(driving.shape[2])):
+            driving_frame = driving[:, :, frame_idx]
+            current_frame = {sess.get_inputs()[0].name: to_numpy(driving_frame)}
+            current_frame_kp = sess.run(None, current_frame)
+            current_frame_kp = {"value":torch.from_numpy(current_frame_kp[0]), "jacobian":torch.from_numpy(current_frame_kp[1])}
+            current_frame_kp = normalize_kp(kp_source=init_frame_kp, kp_driving=current_frame_kp,
+                                   kp_driving_initial=init_frame_kp, use_relative_movement=False,
+                                   use_relative_jacobian=False, adapt_movement_scale=False)
+            kp.append(current_frame_kp)
 
     return kp
 
@@ -88,13 +90,12 @@ def get_video_array(file_name):
     return video_array
 
 
-
 if __name__ == "__main__":
     print("begin_wait,", time.time())
     time.sleep(WAIT)
     parser = ArgumentParser()
     parser.add_argument("--checkpoint", default='checkpoints/onnx_models/conv3_fp32_kpd.onnx', help="path to onnx checkpoint to restore")
-    parser.add_argument("--driving_video", default='working/h264_long_3x_time.mp4', help="path to driving video")
+    parser.add_argument("--driving_video", default='working/in_video/h264_long.mp4', help="path to driving video")
     parser.add_argument("--out_kp_file", default='working/onnx_fp32_f2_t10.kp', help="path to output keypoints file")
     parser.add_argument("--out_img_file", default='working/src_image.jpeg', help="path to output image file")
     parser.add_argument("--run_time", default='gpu', help="choose between cpu, gpu or trt")
@@ -111,9 +112,6 @@ if __name__ == "__main__":
     imageio.imwrite(src_img_file_name, source_image)
 
     key_points = onnx_extract_keypoints(driving_video, opt.checkpoint, opt.fp, opt.run_time)
-
-    #print("process_key_points,", time.time())
-    processed_keypoints = key_points
 
     print("save_key_points,", time.time())
     np.save(opt.out_kp_file, np.array(processed_keypoints), allow_pickle=True)
