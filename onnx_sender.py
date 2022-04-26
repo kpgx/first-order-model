@@ -45,7 +45,7 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
     if rtime=='trt':
         EP_list.append('TensorrtExecutionProvider')
 
-    write_log_entry(LOG_FILE_NAME, "loading_model, {}".format(time.time()))
+    write_log_entry(LOG_FILE_NAME, "loading_model, {}\n".format(time.time()))
     # print("loading_model,", time.time())
     sess = rt.InferenceSession(kp_detector_file_name, providers=EP_list)
     if fp == '16':
@@ -59,7 +59,7 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
     init_frame_kp = sess.run(None, init_frame)
     init_frame_kp = {"value":torch.from_numpy(init_frame_kp[0]), "jacobian":torch.from_numpy(init_frame_kp[1])}
     # loop the video
-    write_log_entry(LOG_FILE_NAME, "extracting_key_points_{}_times, {}".format(TIMES, time.time()))
+    write_log_entry(LOG_FILE_NAME, "extracting_key_points_{}_times, {}\n".format(TIMES, time.time()))
     st_time = time.time()
     # print("extracting_key_points ", TIMES, ',', time.time())
     for i in range(TIMES):
@@ -99,7 +99,7 @@ def get_video_array(file_name):
 
 def write_log_entry(file_name, line):
     with open(file_name, 'a+') as f:
-        f.write(line+'\n')
+        f.write(line)
 
 
 if __name__ == "__main__":
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     driving_video = get_video_array(opt.driving_video)
     write_log_entry(SINGLE_LOG_FILE_NAME, "{}, ".format(opt.driving_video))
 
-    write_log_entry(LOG_FILE_NAME, "begin_wait, {}".format(time.time()))
+    write_log_entry(LOG_FILE_NAME, "begin_wait, {}\n".format(time.time()))
     # print("begin_wait,", time.time())
     time.sleep(WAIT)
 
@@ -129,12 +129,12 @@ if __name__ == "__main__":
 
     key_points = onnx_extract_keypoints(driving_video, opt.checkpoint, opt.fp, opt.run_time)
 
-    write_log_entry(LOG_FILE_NAME, "save_key_points, {}".format(time.time()))
+    write_log_entry(LOG_FILE_NAME, "save_key_points, {}\n".format(time.time()))
     # print("save_key_points,", time.time())
     np.save(opt.out_kp_file, np.array(key_points), allow_pickle=True)
     write_compressed_keypoint_file2(opt.out_kp_file+"_compressed", key_points)
 
-    write_log_entry(LOG_FILE_NAME, "end, {}".format(time.time()))
+    write_log_entry(LOG_FILE_NAME, "end, {}\n".format(time.time()))
     # print("end,", time.time())
 
     time.sleep(WAIT)
