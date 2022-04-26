@@ -114,8 +114,8 @@ if __name__ == "__main__":
     key_points = onnx_extract_keypoints(driving_video, opt.checkpoint, opt.fp, opt.run_time)
 
     print("save_key_points,", time.time())
-    np.save(opt.out_kp_file, np.array(processed_keypoints), allow_pickle=True)
-    write_compressed_keypoint_file2(opt.out_kp_file+"_compressed", processed_keypoints)
+    np.save(opt.out_kp_file, np.array(key_points), allow_pickle=True)
+    write_compressed_keypoint_file2(opt.out_kp_file+"_compressed", key_points)
 
 #
     print("end,", time.time())
