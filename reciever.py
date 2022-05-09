@@ -19,6 +19,8 @@ from scipy.spatial import ConvexHull
 import os
 os.environ["IMAGEIO_FFMPEG_EXE"] = "/usr/bin/ffmpeg"
 
+TIMES = 100
+
 
 if sys.version_info[0] < 3:
     raise Exception("You must use Python 3 or higher. Recommended version is Python 3.7")
@@ -97,10 +99,10 @@ def find_best_frame(source, driving, cpu=False):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--config", default='config/00/bair-256.yaml', help="path to config")
-    parser.add_argument("--checkpoint", default='checkpoints/00/bair-cpk.pth.tar', help="path to checkpoint to restore")
+    parser.add_argument("--config", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.yaml', help="path to config")
+    parser.add_argument("--checkpoint", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.tar', help="path to checkpoint to restore")
 
-    parser.add_argument("--result_video", default='working/conv5_kpd_with_conv5_gen.mp4', help="path to output")
+    parser.add_argument("--result_video", default='pre_taichi_sample1_reconstructed.mp4', help="path to output")
  
     parser.add_argument("--relative", dest="relative", action="store_true", help="use relative or absolute keypoint coordinates")
     parser.add_argument("--adapt_scale", dest="adapt_scale", action="store_true", help="adapt movement scale based on convex hull of keypoints")
@@ -112,8 +114,8 @@ if __name__ == "__main__":
                         help="Set frame to start from.")
  
     parser.add_argument("--cpu", dest="cpu",default=False, action="store_true", help="cpu mode.")
-    parser.add_argument("--src_img", default="working/src_image.jpeg", help="key frame")
-    parser.add_argument("--kp_file", default="working/torch.kp.npy", help="keypoints file")
+    parser.add_argument("--src_img", default="pre_taichi_sample1.jpeg", help="key frame")
+    parser.add_argument("--kp_file", default="pre_taichi_sample1.kp.npy", help="keypoints file")
  
     parser.set_defaults(relative=False)
     parser.set_defaults(adapt_scale=False)
@@ -123,6 +125,10 @@ if __name__ == "__main__":
     source_image = imageio.imread(opt.src_img)
     source_image = resize(source_image, (256,256))[..., :3]
     key_points = np.load(opt.kp_file, allow_pickle=True)
+    print(len(key_points))
+    # hack to fix looping kp points
+    #key_points = key_points[:int(len(key_points)/TIMES)]
+    print(len(key_points))
 
     generator, kp_detector = load_checkpoints(config_path=opt.config, checkpoint_path=opt.checkpoint, cpu=opt.cpu)
 
