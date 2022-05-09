@@ -77,9 +77,9 @@ def export_models(config_path, checkpoint_path, out_file_name):
     #load_and_check('first-order-model-generator.onnx')
 
 if __name__ == "__main__":
-    config_file = "retrained_models/01/bair-256.yaml"
-    checkpoint_file = "retrained_models/01/checkpoint.pth.tar"
-    onnx_model_name = "out_onnx.onnx"
+    config_file = "checkpoints/mgif/torch/mgif-256.yaml"
+    checkpoint_file = "checkpoints/mgif/torch/checkpoint.pth.tar"
+    onnx_model_name = "checkpoints/mgif/onnx/checkpoint.onnx"
     try:
 #        export_models('config/vox-adv-256.yaml',
 #                      '/Users/username/Download/vox-adv-cpk.pth.tar')
