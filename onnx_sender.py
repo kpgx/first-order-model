@@ -13,6 +13,7 @@ from skimage.transform import resize
 import torch
 from imageio import mimread
 from skimage import io, img_as_float32
+from skimage.color import gray2rgb
 
 
 from animate import normalize_kp
@@ -21,10 +22,10 @@ import onnxruntime as rt
 import os
 
 WAIT = 10
-TIMES = 10
+TIMES = 100
 LOG_FILE_SUFFIX = "_fom.log"
 LOG_FILE_NAME = "" # this get populated once video file is read
-SINGLE_LOG_FILE_NAME = "main.log"
+SINGLE_LOG_FILE_NAME = "fom.csv"
 #WAIT = 60
 
 
@@ -109,10 +110,10 @@ def get_file_size_in_KB(file_name):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--checkpoint", default='checkpoints/onnx_models/conv3_fp32_kpd.onnx', help="path to onnx checkpoint to restore")
-    parser.add_argument("--driving_video", default='working/in_video/h264_long.mp4', help="path to driving video")
-    parser.add_argument("--out_kp_file", default='working/onnx_fp32_f2_t10.kp', help="path to output keypoints file")
-    parser.add_argument("--out_img_file", default='working/src_image.jpeg', help="path to output image file")
+    parser.add_argument("--checkpoint", default='checkpoints/mgif/onnx/checkpoint.onnx', help="path to onnx checkpoint to restore")
+    parser.add_argument("--driving_video", default='mgif_sample.gif', help="path to driving video")
+    parser.add_argument("--out_kp_file", default='mgif_sample.kp', help="path to output keypoints file")
+    parser.add_argument("--out_img_file", default='mgif_sample.jpeg', help="path to output image file")
     parser.add_argument("--run_time", default='gpu', help="choose between cpu, gpu or trt")
     parser.add_argument("--fp", default='32', help="precision of the model weights")
 
