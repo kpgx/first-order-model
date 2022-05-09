@@ -87,15 +87,15 @@ if __name__ == "__main__":
     print("begin_wait,", time.time())
     time.sleep(WAIT)
     parser = ArgumentParser()
-    parser.add_argument("--config", default='config/00/bair-256.yaml', help="path to config")
+    parser.add_argument("--config", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.yaml', help="path to config")
     parser.add_argument("--checkpoint",
-                        default='checkpoints/00/bair-cpk.pth.tar',
+                        default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.tar',
                         help="path to checkpoint to restore")
 
-    parser.add_argument("--driving_video", default='h264_long.mp4', help="path to driving video")
+    parser.add_argument("--driving_video", default='taichi_sample1.mp4', help="path to driving video")
     parser.add_argument("--cpu", default=False, dest="cpu", action="store_true", help="cpu mode.")
-    parser.add_argument("--out_kp_file", default='working/torch32.kp', help="path to output keypoints file")
-    parser.add_argument("--out_img_file", default='working/src_image.jpeg', help="path to output image file")
+    parser.add_argument("--out_kp_file", default='pre_taichi_sample1.kp', help="path to output keypoints file")
+    parser.add_argument("--out_img_file", default='pre_taichi_sample1.jpeg', help="path to output image file")
 
     parser.set_defaults(relative=False)
     parser.set_defaults(adapt_scale=False)
