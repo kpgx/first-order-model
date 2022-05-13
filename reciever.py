@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.yaml', help="path to config")
     parser.add_argument("--checkpoint", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.tar', help="path to checkpoint to restore")
 
-    parser.add_argument("--result_dir", default='pre_taichi_sample1_reconstructed.mp4', help="path to output")
+    parser.add_argument("--result_dir", default='working/pre_taichi_sample1_reconstructed.mp4', help="path to output")
  
     parser.add_argument("--relative", dest="relative", action="store_true", help="use relative or absolute keypoint coordinates")
     parser.add_argument("--adapt_scale", dest="adapt_scale", action="store_true", help="adapt movement scale based on convex hull of keypoints")
@@ -114,8 +114,8 @@ if __name__ == "__main__":
                         help="Set frame to start from.")
  
     parser.add_argument("--cpu", dest="cpu",default=False, action="store_true", help="cpu mode.")
-    parser.add_argument("--src_img", default="pre_taichi_sample1.jpeg", help="key frame")
-    parser.add_argument("--kp_file", default="pre_taichi_sample1.kp.npy", help="keypoints file")
+    parser.add_argument("--src_img", default="working/pre_taichi_sample1.jpeg", help="key frame")
+    parser.add_argument("--kp_file", default="working/pre_taichi_sample1.kp.npy", help="keypoints file")
  
     parser.set_defaults(relative=False)
     parser.set_defaults(adapt_scale=False)
@@ -134,8 +134,10 @@ if __name__ == "__main__":
 
     predictions = make_animation(source_image, key_points, generator, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
     fps=10
-    print("saving video at", opt.result_dir)
+    print("saving frames at", opt.result_dir)
     # imageio.mimsave(opt.result_video, [img_as_ubyte(frame) for frame in predictions], fps=fps)
+    if not os.path.exists(opt.result_dir):
+        os.makedirs(opt.result_dir)
     for idx, frame in enumerate(predictions):
         imageio.imwrite(os.path.join(opt.result_dir, "{0:04d}.png".format(idx)), img_as_ubyte(frame))
 
