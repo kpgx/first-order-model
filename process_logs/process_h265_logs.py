@@ -3,8 +3,8 @@ import pandas as pd
 import csv
 
 
-data_folder="bair"
-fom_file = data_folder + "/fom.csv"
+data_folder="mgif/h265"
+fom_file = data_folder + "/h265.csv"
 power_file = data_folder+"/jtop.csv"
 out_csv_file = data_folder+"/out.csv"
 
@@ -13,7 +13,7 @@ power = pd.read_csv(power_file)
 
 power_readings_per_file = []
 for i, row in fom.iterrows():
-    file_name,num_of_frames, wait_start, wait_end, start, end, src_size, kp_size, compressed_kp_size = row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]
+    file_name, wait_start, wait_end, start, end, src_size, dest_size = row[0], row[1], row[2], row[3], row[4], row[5], row[6]
     idle_power_readings = power.query("{} < ts < {}".format(wait_start+1, wait_end-1))
     # chosen_idle_power_reading = idle_power_readings["total power cur"][0]
     power_readings = power.query("{} < ts < {}".format(start+1, end-1))
@@ -32,7 +32,7 @@ for i, row in fom.iterrows():
     avg_conversion_power = avg_power_reading-avg_idle_power_reading
 
     total_energy = avg_conversion_power * duration
-    current_data = {"file":file_name,"frames":num_of_frames, "start":start, "end":end,"src_file_size":src_size,"compressed_kp_size":compressed_kp_size/10, "duration(sec)":duration/10,"avg_total_idle_power_reading":avg_idle_power_reading, "avg_total_processing_power_reading(W)":avg_power_reading,"avg_conversion_power(W)":avg_conversion_power, "total_energy(J)":total_energy/10}
+    current_data = {"file":file_name, "start":start, "end":end,"src_file_size":src_size,"h265_file_size":dest_size, "duration(sec)":duration/10,"avg_total_idle_power_reading":avg_idle_power_reading, "avg_total_processing_power_reading(W)":avg_power_reading,"avg_conversion_power(W)":avg_conversion_power, "total_energy(J)":total_energy/10}
 
     power_readings_per_file.append(current_data)
 
