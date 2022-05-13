@@ -102,7 +102,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.yaml', help="path to config")
     parser.add_argument("--checkpoint", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.tar', help="path to checkpoint to restore")
 
-    parser.add_argument("--result_video", default='pre_taichi_sample1_reconstructed.mp4', help="path to output")
+    parser.add_argument("--result_dir", default='pre_taichi_sample1_reconstructed.mp4', help="path to output")
  
     parser.add_argument("--relative", dest="relative", action="store_true", help="use relative or absolute keypoint coordinates")
     parser.add_argument("--adapt_scale", dest="adapt_scale", action="store_true", help="adapt movement scale based on convex hull of keypoints")
@@ -134,6 +134,8 @@ if __name__ == "__main__":
 
     predictions = make_animation(source_image, key_points, generator, kp_detector, relative=opt.relative, adapt_movement_scale=opt.adapt_scale, cpu=opt.cpu)
     fps=10
-    print("saving video at", opt.result_video)
-    imageio.mimsave(opt.result_video, [img_as_ubyte(frame) for frame in predictions], fps=fps)
+    print("saving video at", opt.result_dir)
+    # imageio.mimsave(opt.result_video, [img_as_ubyte(frame) for frame in predictions], fps=fps)
+    for idx, frame in enumerate(predictions):
+        imageio.imwrite(os.path.join(opt.result_dir, "{0:04d}.png".format(idx)), img_as_ubyte(frame))
 
