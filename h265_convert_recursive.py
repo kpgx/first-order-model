@@ -4,14 +4,15 @@ from os import listdir
 from os.path import isfile, join
 import time
 import os
+from tqdm import tqdm
 
 COMMAND = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", "placeholder.mp4", "-c:v", "hevc", "-preset", "medium","-crf", "28", "-x265-params", "bframes=0", "placeholder.mp4"]
-DIR = "mgif-test"
+DIR = "data/vox-eval"
 OUT_DIR = join(DIR, "h265")
-SINGLE_LOG_FILE_NAME = "h265_dir.csv"
-WAIT = 10
-TIMES = 100
-SRC_EXT = '.gif'
+SINGLE_LOG_FILE_NAME = "h265_vox_eval_100.csv"
+WAIT = 5
+TIMES = 1
+SRC_EXT = '.mp4'
 
 
 def write_log_entry(file_name, line):
@@ -31,7 +32,7 @@ def get_src_file_list_from_dir(mypath):
 
 file_list = get_src_file_list_from_dir(DIR)
 
-for file_name in file_list:
+for file_name in tqdm(file_list):
     src_video = file_name
     out_video = join(OUT_DIR, file_name+"_h265.mp4")
     
