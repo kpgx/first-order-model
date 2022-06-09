@@ -22,7 +22,7 @@ import onnxruntime as rt
 import os
 
 WAIT = 10
-TIMES = 100
+TIMES = 10
 LOG_FILE_SUFFIX = "_fom.log"
 LOG_FILE_NAME = "" # this get populated once video file is read
 SINGLE_LOG_FILE_NAME = "fom.csv"
@@ -73,7 +73,8 @@ def onnx_extract_keypoints(video, kp_detector_file_name,fp, rtime='gpu'):
             current_frame_kp = normalize_kp(kp_source=init_frame_kp, kp_driving=current_frame_kp,
                                    kp_driving_initial=init_frame_kp, use_relative_movement=False,
                                    use_relative_jacobian=False, adapt_movement_scale=False)
-            kp.append(current_frame_kp)
+            if i==0: # so this won't repeat frame adds, while looping on TIMES
+                kp.append(current_frame_kp)
     end_time = time.time()
     write_log_entry(SINGLE_LOG_FILE_NAME, "{}, {}, ".format(st_time,end_time))
     return kp
@@ -110,7 +111,7 @@ def get_file_size_in_KB(file_name):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--checkpoint", default='checkpoints/mgif/onnx/checkpoint.onnx', help="path to onnx checkpoint to restore")
+    parser.add_argument("--checkpoint", default='checkpoints/vox/checkpoint.onnx', help="path to onnx checkpoint to restore")
     parser.add_argument("--driving_video", default='mgif_sample.gif', help="path to driving video")
     parser.add_argument("--out_kp_file", default='mgif_sample.kp', help="path to output keypoints file")
     parser.add_argument("--out_img_file", default='mgif_sample.jpeg', help="path to output image file")
