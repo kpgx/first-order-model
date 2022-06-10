@@ -6,6 +6,11 @@ import numpy as np
 
 from modules.generator import OcclusionAwareGenerator
 from modules.keypoint_detector import KPDetector
+    
+root_dir = "pc_folder/checkpoints/bair_new_conv2/"
+config_file = root_dir+"config.yaml"
+checkpoint_file = root_dir+"checkpoint.pth.tar"
+onnx_model_name = root_dir+"checkpoint.onnx"
 
 
 def load_and_check(model_path):
@@ -77,9 +82,6 @@ def export_models(config_path, checkpoint_path, out_file_name):
     #load_and_check('first-order-model-generator.onnx')
 
 if __name__ == "__main__":
-    config_file = "checkpoints/vox/vox-256.yaml"
-    checkpoint_file = "checkpoints/vox/checkpoint.pth.tar"
-    onnx_model_name = "checkpoints/vox/checkpoint.onnx"
     try:
 #        export_models('config/vox-adv-256.yaml',
 #                      '/Users/username/Download/vox-adv-cpk.pth.tar')
