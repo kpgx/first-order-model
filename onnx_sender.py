@@ -111,12 +111,12 @@ def get_file_size_in_KB(file_name):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--checkpoint", default='checkpoints/vox/checkpoint.onnx', help="path to onnx checkpoint to restore")
-    parser.add_argument("--driving_video", default='mgif_sample.gif', help="path to driving video")
-    parser.add_argument("--out_kp_file", default='mgif_sample.kp', help="path to output keypoints file")
-    parser.add_argument("--out_img_file", default='mgif_sample.jpeg', help="path to output image file")
-    parser.add_argument("--run_time", default='gpu', help="choose between cpu, gpu or trt")
-    parser.add_argument("--fp", default='32', help="precision of the model weights")
+    parser.add_argument("--checkpoint", help="path to onnx checkpoint to restore")
+    parser.add_argument("--driving_video", help="path to driving video")
+    parser.add_argument("--out_kp_file", help="path to output keypoints file")
+    parser.add_argument("--out_img_file", help="path to output image file")
+    parser.add_argument("--run_time", help="choose between cpu, gpu or trt")
+    parser.add_argument("--fp", help="precision of the model weights")
 
     opt = parser.parse_args()
 
