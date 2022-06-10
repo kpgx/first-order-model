@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-DIR = "working/bair/h265/bair_test"
-PNG_DIR = os.path.join(DIR, "PNG")
+DIR = "/Users/larcuser/pc_folder/data/vox-test"
+PNG_DIR = "/Users/larcuser/pc_folder/data/vox-test/png"
 COMMAND = ["ffmpeg", "-i", "placeholder1", "placeholder2"]
 
 

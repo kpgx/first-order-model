@@ -2,9 +2,9 @@ import subprocess
 
 from tqdm import tqdm
 
-png_folder = "working/bair/src/PNG"
-cropped_png_folder = "working/bair/src/cropped_png"
-kp_folder = "working/bair/kp"
+png_folder = "/Users/larcuser/pc_folder/data/vox-test/png"
+cropped_png_folder = "/Users/larcuser/pc_folder/data/vox-test/src_cropped_png"
+kp_folder = "/Users/larcuser/pc_folder/data/vox-test/"
 
 import os
 
@@ -19,10 +19,11 @@ def get_png_files_in_dir(a_dir):
 
 
 for sub_dir in tqdm(get_sub_folder_list(png_folder)):
+    kp_file = os.path.join(kp_folder, sub_dir + '.kp.npy')
 
-    kp_file = os.path.join(kp_folder,sub_dir.split('_')[0]+'.kp.npy')
+    # kp_file = os.path.join(kp_folder,sub_dir.split('_')[0]+'.kp.npy')
     current_png_folder = os.path.join(png_folder, sub_dir)
     current_cropped_png_folder = os.path.join(cropped_png_folder, sub_dir)
-    command = ['python3', 'extract_roi.py', '--in_frame_dir', current_png_folder, '--out_frame_dir', current_cropped_png_folder, '--kp_file', kp_file]
+    command = ['python3', 'calculate_quality/extract_roi.py', '--in_frame_dir', current_png_folder, '--out_frame_dir', current_cropped_png_folder, '--kp_file', kp_file]
     # print(command)
     subprocess.run(command)

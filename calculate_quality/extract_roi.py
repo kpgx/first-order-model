@@ -139,4 +139,4 @@ if __name__ == "__main__":
         else:
             cropped_frame = get_black_cropped_frame(current_frame, xy_min_max_raw)
 
-        imageio.imwrite(os.path.join(opt.out_frame_dir, "{0:03d}.png".format(idx)), img_as_ubyte(cropped_frame))
+        imageio.imwrite(os.path.join(opt.out_frame_dir, "{0:04d}.png".format(idx)), img_as_ubyte(cropped_frame))
