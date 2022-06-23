@@ -99,10 +99,10 @@ def find_best_frame(source, driving, cpu=False):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("--config", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.yaml', help="path to config")
-    parser.add_argument("--checkpoint", default='checkpoints/taichi/torch/pretrained_taichi-cpk.pth.tar', help="path to checkpoint to restore")
+    parser.add_argument("--config", default='placeholder/pretrained_taichi-cpk.pth.yaml', help="path to config")
+    parser.add_argument("--checkpoint", default='placeholderpretrained_taichi-cpk.pth.tar', help="path to checkpoint to restore")
 
-    parser.add_argument("--result_dir", default='working/pre_taichi_sample1_reconstructed.mp4', help="path to output")
+    parser.add_argument("--result_dir", default='placeholder/pre_taichi_sample1_reconstructed.mp4', help="path to output")
  
     parser.add_argument("--relative", dest="relative", action="store_true", help="use relative or absolute keypoint coordinates")
     parser.add_argument("--adapt_scale", dest="adapt_scale", action="store_true", help="adapt movement scale based on convex hull of keypoints")
