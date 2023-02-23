@@ -20,10 +20,10 @@ model_params:
     estimate_jacobian: True
   kp_detector_params:
      temperature: 0.1
-     block_expansion: 16
+     block_expansion: 32
      max_features: 1024
      scale_factor: 0.25
-     num_blocks: 5
+     num_blocks: 7
   generator_params:
     block_expansion: 64
     max_features: 512
@@ -49,7 +49,7 @@ train_params:
   lr_generator: 2.0e-4
   lr_discriminator: 2.0e-4
   lr_kp_detector: 2.0e-4
-  batch_size: 36
+  batch_size: 30
   scales: [1, 0.5, 0.25, 0.125]
   checkpoint_freq: 10
   transform_params:

@@ -1,9 +1,13 @@
 import os
 import subprocess
+from os import listdir
+from os.path import isfile, join
 
-DIR = "/Users/larcuser/pc_folder/data/vox-test"
-PNG_DIR = "/Users/larcuser/pc_folder/data/vox-test/png"
+
+DIR = "../data/moving-gif/test"
+PNG_DIR = "../test_data_subset/mgif"
 COMMAND = ["ffmpeg", "-i", "placeholder1", "placeholder2"]
+NUMBER_OF_FILES = 10
 
 
 def create_dir_if_not_exists(name):
@@ -11,12 +15,14 @@ def create_dir_if_not_exists(name):
         os.makedirs(name)
 
 
-def get_video_list_from_dir(name):
-    vidoes = sorted([x for x in os.listdir(name) if x.lower().endswith('.mp4')])
-    return vidoes
+def get_file_list_from_dir(mypath):
+    onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    return onlyfiles
+
+
+video_list = get_file_list_from_dir(DIR)[:NUMBER_OF_FILES]
 
 create_dir_if_not_exists(PNG_DIR)
-video_list = get_video_list_from_dir(DIR)
 for file_name in video_list:
     out_folder = os.path.join(PNG_DIR, file_name)
     create_dir_if_not_exists(out_folder)

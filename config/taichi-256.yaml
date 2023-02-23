@@ -33,7 +33,7 @@ dataset_params:
 model_params:
   common_params:
     # Number of keypoint
-    num_kp: 10
+    num_kp: 2
     # Number of channels per image
     num_channels: 3
     # Using first or zero order model
@@ -46,7 +46,7 @@ model_params:
      # Maximum allowed number of features
      max_features: 1024
      # Number of block in Unet. Can be increased or decreased depending or resolution.
-     num_blocks: 3
+     num_blocks: 1
      # Keypioint is predicted on smaller images for better performance,
      # scale_factor=0.25 means that 256x256 image will be resized to 64x64
      scale_factor: 0.25

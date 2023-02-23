@@ -103,7 +103,8 @@ if __name__ == "__main__":
     opt = parser.parse_args()
 
     reader = imageio.get_reader(opt.driving_video)
-    fps = reader.get_meta_data()['fps']
+    # print(f"video reader: {reader.get_meta_data()}")
+    # fps = reader.get_meta_data()['fps']
     driving_video = []
     print("reading_video,", time.time())
     try:

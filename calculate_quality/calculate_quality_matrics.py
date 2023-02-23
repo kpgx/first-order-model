@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser
 import cv2 as cv
-import cv2.cv2
+# import cv2.cv2
 from skimage.metrics import structural_similarity as compare_ssim
 import numpy as np
 from skimage import io, img_as_float32

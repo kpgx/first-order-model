@@ -20,6 +20,9 @@ from train import train
 from reconstruction import reconstruction
 from animate import animate
 
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
+
 if __name__ == "__main__":
     
     if sys.version_info[0] < 3:

@@ -16,7 +16,7 @@ dataset_params:
 
 model_params:
   common_params:
-    num_kp: 10
+    num_kp: 5
     num_channels: 3
     estimate_jacobian: True
   kp_detector_params:
@@ -50,7 +50,7 @@ train_params:
   lr_generator: 2.0e-4
   lr_discriminator: 2.0e-4
   lr_kp_detector: 2.0e-4
-  batch_size: 100
+  batch_size: 40
   scales: [1, 0.5, 0.25, 0.125]
   checkpoint_freq: 50
   transform_params:
