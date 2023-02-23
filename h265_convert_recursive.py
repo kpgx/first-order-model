@@ -7,8 +7,8 @@ import os
 from tqdm import tqdm
 
 COMMAND = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", "placeholder.mp4", "-c:v", "hevc", "-preset", "medium","-crf", "28", "-x265-params", "bframes=0", "placeholder.mp4"]
-DIR = "data/vox-eval"
-OUT_DIR = join(DIR, "h265")
+DIR = "/Users/larcuser/pc_folder/data/bair-train-test-eval/eval"
+OUT_DIR = "/Users/larcuser/pc_folder/data/bair-train-test-eval/eval_h265"
 SINGLE_LOG_FILE_NAME = "h265_vox_eval_100.csv"
 WAIT = 5
 TIMES = 1

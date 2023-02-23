@@ -2,9 +2,10 @@ import subprocess
 
 from tqdm import tqdm
 
-png_folder = "/Users/larcuser/Data/bair-eval-for-object-detection/png/"
+png_folder = "/Users/larcuser/Data/bair-eval-for-object-detection/src/"
 cropped_png_folder = "/Users/larcuser/Data/bair-eval-for-object-detection/png/cropped"
-kp_folder = "/Users/larcuser/Data/bair-eval-for-object-detection/npy/"
+kp_folder = "/Users/larcuser/Data/bair-eval-for-object-detection/kp/"
+
 
 import os
 
@@ -24,6 +25,6 @@ for sub_dir in tqdm(get_sub_folder_list(png_folder)):
     # kp_file = os.path.join(kp_folder,sub_dir.split('_')[0]+'.kp.npy')
     current_png_folder = os.path.join(png_folder, sub_dir)
     current_cropped_png_folder = os.path.join(cropped_png_folder, sub_dir)
-    command = ['python3', 'extract_roi.py', '--in_frame_dir', current_png_folder, '--out_frame_dir', current_cropped_png_folder, '--kp_file', kp_file]
+    command = ['python3', 'annotate_kp.py', '--in_frame_dir', current_png_folder, '--out_frame_dir', current_cropped_png_folder, '--kp_file', kp_file]
     # print(command)
     subprocess.run(command)

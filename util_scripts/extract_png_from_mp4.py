@@ -3,9 +3,14 @@ import subprocess
 from os import listdir
 from os.path import isfile, join
 
+<<<<<<< HEAD
 
 DIR = "../data/moving-gif/test"
 PNG_DIR = "../test_data_subset/mgif"
+=======
+DIR = "/Users/larcuser/tmp/test_subset"
+PNG_DIR = DIR + "/png"
+>>>>>>> c234fa855e6918563ad7498fab9230090138f0dc
 COMMAND = ["ffmpeg", "-i", "placeholder1", "placeholder2"]
 NUMBER_OF_FILES = 10
 

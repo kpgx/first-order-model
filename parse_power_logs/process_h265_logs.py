@@ -3,14 +3,14 @@ import pandas as pd
 import csv
 
 
-data_folder="/Users/larcuser/Projects/first-order-model/parse_power_logs/logs/vox-eval-100/h265"
-fom_file = data_folder + "/h265.csv"
-power_file = data_folder+"/jtop.csv"
-out_csv_file = data_folder+"/out.csv"
+data_folder = "/Users/larcuser/Projects/first-order-model/parse_power_logs/logs/bair_eval_h265_diff_preset_diff_crf"
+h265_file = data_folder + "/h265_bair_eval_100_crf39_preset_veryslow.csv"
+power_file = data_folder+"/jtop_crf39_veryslow.csv"
+out_csv_file = data_folder+"/out_bair_eval_crf39_veryslow.csv"
 
 TIMES = 1
 
-fom = pd.read_csv(fom_file, header=None)
+fom = pd.read_csv(h265_file, header=None)
 power = pd.read_csv(power_file)
 
 power_readings_per_file = []
@@ -33,12 +33,20 @@ for i, row in fom.iterrows():
         total_idle_power_readings.append(reading["total power cur"])
     avg_idle_power_reading = sum(total_idle_power_readings) / len(total_idle_power_readings) / 1000
 
-    duration = end - start
-
+    duration = (end - start) / TIMES
     avg_conversion_power = avg_power_reading-avg_idle_power_reading
 
     total_energy = avg_conversion_power * duration
-    current_data = {"file":file_name, "start":start, "end":end,"src_file_size":src_size,"h265_file_size":dest_size, "duration(sec)":duration/TIMES,"avg_total_idle_power_reading":avg_idle_power_reading, "avg_total_processing_power_reading(W)":avg_power_reading,"avg_conversion_power(W)":avg_conversion_power, "total_energy(J)":total_energy/TIMES}
+    current_data = {"file":file_name,
+                    "start":start,
+                    "end":end,
+                    "src_file_size":src_size,
+                    "h265_file_size":dest_size,
+                    "duration(sec)":duration,
+                    "avg_total_idle_power_reading":avg_idle_power_reading,
+                    "avg_total_processing_power_reading(W)":avg_power_reading,
+                    "avg_conversion_power(W)":avg_conversion_power,
+                    "total_energy(J)":total_energy}
 
     power_readings_per_file.append(current_data)
 
