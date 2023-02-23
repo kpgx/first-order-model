@@ -1,8 +1,8 @@
 import os
 import subprocess
 
-DIR = "/Users/larcuser/pc_folder/data/vox-test"
-PNG_DIR = "/Users/larcuser/pc_folder/data/vox-test/png"
+DIR = "/Users/larcuser/tmp/test_subset"
+PNG_DIR = DIR + "/png"
 COMMAND = ["ffmpeg", "-i", "placeholder1", "placeholder2"]
 
 

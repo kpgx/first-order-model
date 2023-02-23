@@ -67,13 +67,15 @@ def get_xy_min_max(key_points):
 
 
 def get_blured_cropped_frame(frame, coord):
-    box_width = coord['x_max']-coord['x_min']
     box_height = coord['y_max'] - coord['y_min']
+    box_width = box_height/2
 
-    x_min = coord['x_min']-int(box_width/2)
+    x_min = coord['x_min']-int(box_width/1.5)
     x_max = coord['x_max']+int(box_width/2)
-    y_min = coord['y_min']-int(box_height/2)
-    y_max = coord['y_max']+int(box_height/2)
+    y_min = coord['y_min']
+    y_max = coord['y_max']
+
+    print("inside blured image", x_min, x_max, y_min, y_max)
 
     mask = np.zeros(frame.shape[:2], dtype="uint8")
     cv2.rectangle(mask, (x_min, y_min), (x_max, y_max), 255, -1)
@@ -118,27 +120,69 @@ if __name__ == "__main__":
     parser.add_argument("--in_frame_dir", default='working/bair/h265/PNG/000000.mp4_h265.mp4', help="path to src video")
     parser.add_argument("--out_frame_dir", default='working/bair/h265/cropped_png/000000.mp4_h265.mp4/', help="path to output video")
     parser.add_argument("--kp_file", default='working/bair/kp/000000.mp4.kp.npy', help="path to key-points file")
-    parser.add_argument("--crop", default="mark_kp", choices=["black", "blured", "mark_kp"])
+    parser.add_argument("--crop", default="blured", choices=["black", "blured", "mark_kp"])
+    sampled_img_folder = "/Users/larcuser/Data/bair-eval-for-object-detection/images/"
+    cropped_img_folder = "/Users/larcuser/Data/bair-eval-for-object-detection/marked_for_test/"
+    annotations_folder = "/Users/larcuser/Data/bair-eval-for-object-detection/labels/"
 
     opt = parser.parse_args()
     keypoints = get_keypoints(opt.kp_file)
     frames = get_frames_from_dir(opt.in_frame_dir)
 
-    if not os.path.exists(opt.out_frame_dir):
-        os.makedirs(opt.out_frame_dir)
+    if not os.path.exists(sampled_img_folder):
+        os.makedirs(sampled_img_folder)
+
+    if not os.path.exists(annotations_folder):
+        os.makedirs(annotations_folder)
+    if not os.path.exists(cropped_img_folder):
+        os.makedirs(cropped_img_folder)
 
     for idx in range(len(frames)):
         current_frame = frames[idx]
         current_kp_set = keypoints[idx]['value']
         xy_min_max = get_xy_min_max(current_kp_set)
         xy_min_max_raw = get_raw_coordinates(xy_min_max, current_frame.shape)
-        if opt.crop == "blured":
-            cropped_frame = get_blured_cropped_frame(current_frame, xy_min_max_raw)
-        elif opt.crop == "mark_kp":
-            cropped_frame = get_kp_marked_frame(current_frame, current_kp_set)
-        else:
-            cropped_frame = get_black_cropped_frame(current_frame, xy_min_max_raw)
+        # if opt.crop == "blured":
+        #     cropped_frame = get_blured_cropped_frame(current_frame, xy_min_max_raw)
+        # elif opt.crop == "mark_kp":
+        #     cropped_frame = get_kp_marked_frame(current_frame, current_kp_set)
+        # else:
+        #     cropped_frame = get_black_cropped_frame(current_frame, xy_min_max_raw)
 
-        # imageio.imwrite(os.path.join(opt.out_frame_dir, "{0:04d}.png".format(idx)), img_as_ubyte(cropped_frame))
-        cv2.imshow("img", cropped_frame)
-        cv2.waitKey(0)
+        res_frame = cv2.resize(current_frame, dsize=(640, 640), interpolation=cv2.INTER_CUBIC)
+        img_name = opt.in_frame_dir.split('/')[-1].split('.')[0]+ "_{0:04d}.jpg".format(idx)
+        txt_name = opt.in_frame_dir.split('/')[-1].split('.')[0] + "_{0:04d}.txt".format(idx)
+
+        # imageio.imwrite(os.path.join(cropped_img_folder, img_name), img_as_ubyte(cropped_frame))
+
+        # box_height = coord['y_max'] - coord['y_min']
+        # box_width = box_height / 2
+        #
+        # x_min = coord['x_min'] - int(box_width / 1.5)
+        # x_max = coord['x_max'] + int(box_width / 2)
+        # y_min = coord['y_min']
+        # y_max = coord['y_max']
+
+        height = xy_min_max_raw['y_max'] - xy_min_max_raw['y_min']
+        width = height / 2
+
+        x_min = xy_min_max_raw['x_min'] - int(width / 1.5)
+        x_max = xy_min_max_raw['x_max'] + int(width / 2)
+        y_min = xy_min_max_raw['y_min']
+        y_max = xy_min_max_raw['y_max']
+
+        print("outside", x_min, x_max, y_min, y_max)
+
+        # height = y_max-y_min
+        # width = x_max - x_min
+        x_center = (x_max + x_min)/2
+        y_center = (y_max + y_min) / 2
+
+        annotation = "{} {} {} {} {}".format(0, x_center / 256, y_center / 256, width/256, height/256)
+        imageio.imwrite(os.path.join(sampled_img_folder, img_name), res_frame)
+
+        with open(os.path.join(annotations_folder, txt_name), 'w') as f:
+            f.write(annotation)
+        # imageio.imwrite(os.path.join(opt.out_frame_dir, "{0:04d}.png".format(idx)), img_as_ubyte(current_frame))
+        # cv2.imshow("img", current_frame)
+        # cv2.waitKey(0)

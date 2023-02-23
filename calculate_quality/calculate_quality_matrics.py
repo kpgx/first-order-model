@@ -1,13 +1,14 @@
 import os
 from argparse import ArgumentParser
 import cv2 as cv
-import cv2.cv2
+# import cv2.cv2
 from skimage.metrics import structural_similarity as compare_ssim
 import numpy as np
 from skimage import io, img_as_float32
 from skimage.color import gray2rgb, rgba2rgb
 
 LOG_FILE_NAME = "q_matrices.csv"
+FRAMEWISE_LOG_FILE_NAME = "/Users/larcuser/Projects/first-order-model/working/packet_loss_recon_to_lossy_recon_frame_wise_q_matrices_src.csv"
 
 
 def getPSNR(ref, comp):
@@ -57,7 +58,7 @@ if __name__ == "__main__":
 
     log_file_name = os.path.join(opt.target_dir, LOG_FILE_NAME)
     src_frames = get_frames_from_dir(opt.src_dir)
-    target_frames = get_frames_from_dir(opt.target_dir)#[:30]  #hack to loos repeated frames
+    target_frames = get_frames_from_dir(opt.target_dir)  #[:30]  #hack to loos repeated frames
 
     if len(src_frames) != len(target_frames):
         print("length mismatch srt[{}]->[{}] and target[{}]->[{}]".format(opt.src_dir, len(src_frames), opt.target_dir, len(target_frames)))
@@ -74,6 +75,7 @@ if __name__ == "__main__":
         ssim = getSSIM(src_frame, target_frame)
         ssim_list.append(ssim)
         write_log_entry(log_file_name, "{}, {}, {}\n".format(idx, psnr, ssim))
+        write_log_entry(FRAMEWISE_LOG_FILE_NAME, "{}, {}, {}\n".format(idx, psnr, ssim))
         # print(psnr,ssim)
         # cv2.cv2.imshow("src", src_frame)
         # cv2.cv2.imshow("target", target_frame)

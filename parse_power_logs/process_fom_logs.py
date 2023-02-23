@@ -3,7 +3,7 @@ import pandas as pd
 import csv
 
 
-data_folder="/Users/larcuser/Projects/first-order-model/parse_power_logs/logs/vox-eval-100/fom"
+data_folder="/Users/larcuser/Projects/first-order-model/parse_power_logs/logs/taichi/taichi-256-05-3"
 fom_file = data_folder + "/fom.csv"
 power_file = data_folder+"/jtop.csv"
 out_csv_file = data_folder+"/out.csv"
@@ -32,12 +32,26 @@ for i, row in fom.iterrows():
         total_idle_power_readings.append(reading["total power cur"])
     avg_idle_power_reading = sum(total_idle_power_readings) / len(total_idle_power_readings) / 1000  # div by 1000 to convert milli watts to watts
 
-    duration = end - start
+    duration = (end - start) / TIMES
 
     avg_conversion_power = avg_power_reading-avg_idle_power_reading
 
     total_energy = avg_conversion_power * duration
-    current_data = {"file":file_name,"frames":num_of_frames, "start":start, "end":end,"src_file_size":src_size,"compressed_kp_size":compressed_kp_size, "duration(sec)":duration/TIMES,"avg_total_idle_power_reading":avg_idle_power_reading, "avg_total_processing_power_reading(W)":avg_power_reading,"avg_conversion_power(W)":avg_conversion_power, "total_energy(J)":total_energy/TIMES}
+    energy_per_frame = total_energy/num_of_frames
+    duration_per_frame = duration/num_of_frames
+    current_data = {"file":file_name,
+                    "frames":num_of_frames,
+                    "start":start,
+                    "end":end,
+                    "src_file_size":src_size,
+                    "compressed_kp_size":compressed_kp_size,
+                    "duration(sec)":duration,
+                    "avg_total_idle_power_reading":avg_idle_power_reading,
+                    "avg_total_processing_power_reading(W)":avg_power_reading,
+                    "avg_conversion_power(W)":avg_conversion_power,
+                    "total_energy(J)":total_energy,
+                    "energy_per_frame(J/frame)":energy_per_frame,
+                    "duration_per_frame(sec/frame)":duration_per_frame}
 
     power_readings_per_file.append(current_data)
 

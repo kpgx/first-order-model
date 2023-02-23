@@ -2,7 +2,7 @@ import numpy as np
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
-parser.add_argument("--kp_file", required=True, help="kp file path")
+parser.add_argument("--kp_file", default="/Users/larcuser/Data/000127.mp4.kp.npy", help="kp file path")
 
 opt = parser.parse_args()
 
